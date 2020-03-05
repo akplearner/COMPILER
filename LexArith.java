@@ -52,7 +52,6 @@ The functions "driver", "getToken" remain the same.
 
 **/
 
-
 public abstract class LexArith extends IO
 {
 	public enum State 
@@ -60,7 +59,7 @@ public abstract class LexArith extends IO
 	  // non-final states     ordinal number
 
 		Start,             // 0
-		Period,            // 1
+		Dot,            // 1
 		E,                 // 2
 		EPlusMinus,        // 3
 
@@ -70,14 +69,29 @@ public abstract class LexArith extends IO
 		Int,               // 5
 		Float,             // 6
 		FloatE,            // 7
-		Plus,              // 8
-		Minus,             // 9
-		Times,             // 10
+		// Plus,              // 8
+		// Minus,             // 9
+		// Times,             // 10
 		Div,               // 11
+
+		Add,               // 8
+		Sub,               // 9
+		Mul,               // 10
+		
 		LParen,            // 12
 		RParen,            // 13
 
-		UNDEF;
+		Lt,             // 14
+		Le,             // 15
+		Gt,            	// 16
+		Ge,            	// 17
+		Eq,            	// 18
+		LBrace,         // 19
+		RBrace,         // 20
+		FloatF,         // 20
+
+
+		UNDEF;			// 21
 
 		private boolean isFinal()
 		{
@@ -85,6 +99,8 @@ public abstract class LexArith extends IO
 		}	
 	}
 
+	/**
+	 * 
 	// By enumerating the non-final states first and then the final states,
 	// test for a final state can be done by testing if the state's ordinal number
 	// is greater than or equal to that of Id.
@@ -93,17 +109,20 @@ public abstract class LexArith extends IO
 
 	//   static int a; the current input character
 	//   static char c; used to convert the variable "a" to the char type whenever necessary
+	 * 
+	 *  */ 
 
 	public static String t; // holds an extracted token
 	public static State state; // the current state of the FA
 
 	private static int driver()
 
+	/**
 	// This is the driver of the FA. 
 	// If a valid token is found, assigns it to "t" and returns 1.
 	// If an invalid token is found, assigns it to "t" and returns 0.
 	// If end-of-stream is reached without finding any non-whitespace character, returns -1.
-
+	 */
 	{
 		State nextSt; // the next state of the FA
 
@@ -171,17 +190,27 @@ public abstract class LexArith extends IO
 			else if ( Character.isDigit(c) )
 				return State.Int;
 			else if ( c == '+' )
-				return State.Plus;
+				return State.Add;
 			else if ( c == '-' )
-				return State.Minus;
+				return State.Sub;
 			else if ( c == '*' )
-				return State.Times;
+				return State.Mul;
 			else if ( c == '/' )
 				return State.Div;
 			else if ( c == '(' )
 				return State.LParen;
 			else if ( c == ')' )
 				return State.RParen;
+			else if ( c == '<' )
+				return State.Lt;
+			else if ( c == '>' )
+				return State.Gt;
+			else if ( c == '=' )
+				return State.Eq;
+			else if ( c == '{' )
+				return State.LBrace;
+			else if ( c == '}' )
+				return State.RBrace;
 			else
 				return State.UNDEF;
 		case Id:
@@ -193,10 +222,10 @@ public abstract class LexArith extends IO
 			if ( Character.isDigit(c) )
 				return State.Int;
 			else if ( c == '.' )
-				return State.Period;
+				return State.Dot;
 			else
 				return State.UNDEF;
-		case Period:
+		case Dot:
 			if ( Character.isDigit(c) )
 				return State.Float;
 			else
@@ -225,6 +254,40 @@ public abstract class LexArith extends IO
 				return State.FloatE;
 			else
 				return State.UNDEF;
+		case Lt:
+			if ( c == '=' )
+				return State.Le;
+			else
+				return State.UNDEF;
+		case Gt:
+			if ( c == '=' )
+				return State.Ge;
+			else
+				return State.UNDEF;
+		case Add:
+			if ( Character.isDigit(c) )
+				return State.Int;
+			else if ( c == '.' )
+				return State.Dot;
+			else
+				return State.Add;
+		case Sub:
+			if ( Character.isDigit(c) )
+				return State.Int;
+			else if ( c == '.' )
+				return State.Dot;
+			else
+				return State.Sub;
+		case Mul:
+			if ( Character.isDigit(c) )
+				return State.Int;
+			else
+				return State.Mul;
+		case FloatF:
+			if ( c == 'f' || c=='F' )
+				return State.FloatF;
+			else
+				return State.UNDEF;
 		default:
 			return State.UNDEF;
 		}
@@ -235,8 +298,10 @@ public abstract class LexArith extends IO
 	{		
 		// argv[0]: input file containing source code using tokens defined above
 		// argv[1]: output file displaying a list of the tokens 
-
-		setIO( argv[0], argv[1] );
+		
+		//setIO( "C:/Users/apena/Dropbox/cs316/Code/compiler/lexTest/lexTestIn.txt", "C:/Users/apena/Dropbox/cs316/Code/compiler/lexTest/lexTestInOUT.txt" );
+		setIO( "C:/Users/apena/Dropbox/cs316/Code/compiler/lexTest/t2.txt", "C:/Users/apena/Dropbox/cs316/Code/compiler/lexTest/to2.txt" );
+		//setIO( argv[0], argv[1] );
 		
 		int i;
 
